@@ -12,7 +12,7 @@ class App extends Component {
             facts: [],
             fact: "",
             isRevealed: false,
-            truth: "True"
+            reveal: "True"
         };
     }
 
@@ -21,17 +21,15 @@ class App extends Component {
     };
 
     randomise = () => {
-        //this.setState(state => ({
+        this.setState(() => ({ isRevealed: false }));
+
         let rbootcamper = this.state.bootcampers[
             Math.floor(Math.random() * this.state.bootcampers.length)
         ];
         let rfact = this.state.facts[
             Math.floor(Math.random() * this.state.facts.length)
         ];
-        console.log(rfact.truth);
-        console.log(rfact.who);
-        console.log(rbootcamper);
-        if (rfact.truth === "True" && rfact.who === rbootcamper) {
+        if (rfact.reveal === "True" && rfact.who === rbootcamper) {
             this.setState(state => ({
                 fact: rfact,
                 bootcamper: rbootcamper
@@ -69,14 +67,14 @@ class App extends Component {
                         {this.state.fact ? `"${this.state.fact.fact}"` : ""}
                     </p>
                     {this.state.isRevealed ? (
-                        <div className={css.reveal}>{this.state.truth}</div>
+                        <div className={css.reveal}>{this.state.reveal}</div>
                     ) : (
                         <div className={css.button} onClick={this.reveal}>
                             Reveal
                         </div>
                     )}
                     <div className={css.randomise} onClick={this.randomise}>
-                        Randomise
+                        Play
                     </div>
                 </header>
             </div>
