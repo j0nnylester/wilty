@@ -3,7 +3,7 @@ import css from "./App.module.css";
 
 import Score from "../Score";
 
-const gist_ID = "69c73b41c0c513a711c5932e37a55f59";
+const gist_ID = process.env.REACT_APP_GIST_ID;
 const gist_URL = `https://gist.githubusercontent.com/j0nnylester/${gist_ID}/raw`;
 
 class App extends Component {
