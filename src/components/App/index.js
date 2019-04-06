@@ -11,24 +11,31 @@ class App extends Component {
         super(props);
         this.state = {
             bootcampers: [],
-            bootcamper: "Player",
             facts: [],
-            fact: "",
             isRevealed: false,
-            reveal: "True",
-            vsTeam: 0,
-            one: 0,
-            two: 0,
-            three: 0,
-            four: 0,
-            five: 0,
-            six: 0
+            currentGame: {
+                bootcamper: "Player",
+                fact: "",
+                reveal: "",
+                vsTeam: 0
+            },
+            scores: {
+                one: 0,
+                two: 0,
+                three: 0,
+                four: 0,
+                five: 0,
+                six: 0
+            }
         };
     }
 
     changeScore = (team, change) => {
         this.setState(state => ({
-            [team]: state[team] + change
+            scores: {
+                ...state.scores,
+                [team]: state.scores[team] + change
+            }
         }));
     };
 
@@ -36,26 +43,65 @@ class App extends Component {
         this.setState(() => ({ isRevealed: true }));
     };
 
-    randomise = () => {
+    play = () => {
         this.setState(() => ({ isRevealed: false }));
 
-        let rbootcamper = this.state.bootcampers[
-            Math.floor(Math.random() * this.state.bootcampers.length)
-        ];
-        let rfact = this.state.facts[
-            Math.floor(Math.random() * this.state.facts.length)
-        ];
-        if (rfact.reveal === "True" && rfact.who === rbootcamper) {
-            this.setState(() => ({
-                fact: rfact,
-                bootcamper: rbootcamper
+        let randomBootcamperIndex = Math.floor(
+            Math.random() * this.state.bootcampers.length
+        );
+        let randomFactIndex = Math.floor(
+            Math.random() * this.state.facts.length
+        );
+
+        //console.log({ rbi: randomBootcamperIndex, rfi: randomFactIndex });
+
+        if (this.state.facts[randomFactIndex].reveal === "Lie") {
+            this.setState(state => ({
+                bootcampers: [
+                    ...state.bootcampers.slice(0, randomBootcamperIndex),
+                    ...state.bootcampers.slice(randomBootcamperIndex + 1)
+                ],
+                facts: [
+                    ...state.facts.slice(0, randomFactIndex),
+                    ...state.facts.slice(randomFactIndex + 1)
+                ],
+                currentGame: {
+                    fact: state.facts[randomFactIndex].fact,
+                    reveal: state.facts[randomFactIndex].reveal,
+                    bootcamper: state.bootcampers[randomBootcamperIndex],
+                    vsTeam: Math.floor(Math.random() * 5) + 1
+                }
+            }));
+        } else if (
+            this.state.facts[randomFactIndex].who ===
+            this.state.bootcampers[randomBootcamperIndex]
+        ) {
+            this.setState(state => ({
+                bootcampers: [
+                    ...state.bootcampers.slice(0, randomBootcamperIndex),
+                    ...state.bootcampers.slice(randomBootcamperIndex + 1)
+                ],
+                facts: [
+                    ...state.facts.slice(0, randomFactIndex),
+                    ...state.facts.slice(randomFactIndex + 1)
+                ],
+                currentGame: {
+                    fact: state.facts[randomFactIndex].fact,
+                    reveal: state.facts[randomFactIndex].reveal,
+                    bootcamper: state.bootcampers[randomBootcamperIndex],
+                    vsTeam: Math.floor(Math.random() * 5) + 1
+                }
             }));
         } else {
             this.setState(() => ({
-                fact: "",
-                bootcamper: "",
-                vsTeam: Math.floor(Math.random() * 5) + 1
+                currentGame: {
+                    fact: "",
+                    reveal: "",
+                    bootcamper: "",
+                    vsTeam: ""
+                }
             }));
+            this.play();
         }
     };
 
@@ -77,59 +123,44 @@ class App extends Component {
     render() {
         return (
             <div className={css.app}>
-                <header className={css.appheader}>
-                    <h1 className={css.title}>Would I Lie To You?</h1>
-                    <h3 className={css.bootcamper}>
-                        {`${this.state.bootcamper} vs team: ${
-                            this.state.vsTeam
-                        }`}{" "}
-                    </h3>
-                    <p className={css.fact}>
-                        {this.state.fact ? `"${this.state.fact.fact}"` : ""}
-                    </p>
-                    {this.state.isRevealed ? (
-                        <div className={css.reveal}>{this.state.reveal}</div>
-                    ) : (
-                        <div className={css.button} onClick={this.reveal}>
-                            Reveal
-                        </div>
-                    )}
-                    <div className={css.randomise} onClick={this.randomise}>
+                <h1 className={css.title}>Would I Lie To You?</h1>
+                <h3 className={css.bootcamper}>
+                    {`${this.state.currentGame.bootcamper} vs team: ${
+                        this.state.currentGame.vsTeam
+                    }`}{" "}
+                </h3>
+                <p className={css.fact}>
+                    {this.state.currentGame.fact
+                        ? `"${this.state.currentGame.fact}"`
+                        : ""}
+                </p>
+                {this.state.isRevealed ? (
+                    <div className={css.reveal}>
+                        {this.state.currentGame.reveal}
+                    </div>
+                ) : null}
+                <div className={css.buttons}>
+                    <button className={css.playButton} onClick={this.play}>
                         Play
-                    </div>
-                    <div className={css.scores}>
-                        <Score
-                            team="one"
-                            score={this.state.one}
-                            changeScore={this.changeScore}
-                        />
-                        <Score
-                            team="two"
-                            score={this.state.two}
-                            changeScore={this.changeScore}
-                        />
-                        <Score
-                            team="three"
-                            score={this.state.three}
-                            changeScore={this.changeScore}
-                        />
-                        <Score
-                            team="four"
-                            score={this.state.four}
-                            changeScore={this.changeScore}
-                        />
-                        <Score
-                            team="five"
-                            score={this.state.five}
-                            changeScore={this.changeScore}
-                        />
-                        <Score
-                            team="six"
-                            score={this.state.six}
-                            changeScore={this.changeScore}
-                        />
-                    </div>
-                </header>
+                    </button>
+                    <button className={css.revealButton} onClick={this.reveal}>
+                        Reveal
+                    </button>
+                </div>
+                <div className={css.scores}>
+                    {Object.keys(this.state.scores)
+                        .reverse()
+                        .map(team => {
+                            return (
+                                <Score
+                                    key={team}
+                                    team={team}
+                                    score={this.state.scores[team]}
+                                    changeScore={this.changeScore}
+                                />
+                            );
+                        })}
+                </div>
             </div>
         );
     }

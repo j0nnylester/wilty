@@ -1,9 +1,6 @@
 .app {
     text-align: center;
-}
-
-.appheader {
-    background-color: #282c34;
+    background-color: black;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -13,34 +10,16 @@
     color: white;
 }
 
-.title,
-.bootcamper {
-    color: white;
-}
-
 .fact {
-    color: white;
-    max-width: 50vw;
+    max-width: 90vw;
     font-style: italic;
     margin-bottom: 20vh;
-}
-
-.button {
-    margin: 10px;
-    height: 10vh;
-    width: 20vw;
-    cursor: pointer;
-    border: none;
-    background-color: transparent;
-    color: white;
-    font-size: 1.2rem;
 }
 
 .reveal {
     position: absolute;
     top: 10vh;
     font-size: 20rem;
-    color: white;
     font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
     font-weight: bold;
     transform: rotateZ(-20deg);
@@ -58,14 +37,20 @@
     justify-content: space-evenly;
 }
 
-.randomise {
+.buttons {
     position: absolute;
+    display: flex;
     top: 90vh;
-    height: 10vh;
-    width: 20vw;
+}
+.playButton,
+.revealButton {
+    top: 90vh;
+    height: 5vh;
+    width: 10vw;
     cursor: pointer;
     border: none;
     background-color: transparent;
     color: white;
+    text-align: center;
     font-size: 1.2rem;
 }
