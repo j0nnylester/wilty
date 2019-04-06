@@ -11,9 +11,21 @@
 }
 
 .fact {
-    max-width: 90vw;
+    width: 70vw;
+    height: 10vh;
     font-style: italic;
-    margin-bottom: 20vh;
+    margin-top: 10vh;
+}
+
+.bootcamper {
+    position: absolute;
+    top: 20vh;
+}
+
+.round {
+    position: absolute;
+    top: -2vh;
+    left: 4vh;
 }
 
 .reveal {

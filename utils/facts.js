@@ -16,6 +16,8 @@ let needed = bootcampers.filter(bootcamper => {
 });
 
 console.log({
+    True: provided.length,
+    Lie: facts.length - provided.length,
     Facts: facts.length,
     Bootcapmers: bootcampers.length,
     Missing: needed.length,
