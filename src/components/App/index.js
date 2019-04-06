@@ -13,6 +13,7 @@ class App extends Component {
             bootcampers: [],
             facts: [],
             isRevealed: false,
+            playedTimes: 1,
             currentGame: {
                 bootcamper: "Player",
                 fact: "",
@@ -40,7 +41,10 @@ class App extends Component {
     };
 
     reveal = () => {
-        this.setState(() => ({ isRevealed: true }));
+        this.setState(state => ({
+            isRevealed: true,
+            playedTimes: state.playedTimes + 1
+        }));
     };
 
     play = () => {
@@ -124,11 +128,6 @@ class App extends Component {
         return (
             <div className={css.app}>
                 <h1 className={css.title}>Would I Lie To You?</h1>
-                <h3 className={css.bootcamper}>
-                    {`${this.state.currentGame.bootcamper} vs team: ${
-                        this.state.currentGame.vsTeam
-                    }`}{" "}
-                </h3>
                 <p className={css.fact}>
                     {this.state.currentGame.fact
                         ? `"${this.state.currentGame.fact}"`
@@ -139,14 +138,12 @@ class App extends Component {
                         {this.state.currentGame.reveal}
                     </div>
                 ) : null}
-                <div className={css.buttons}>
-                    <button className={css.playButton} onClick={this.play}>
-                        Play
-                    </button>
-                    <button className={css.revealButton} onClick={this.reveal}>
-                        Reveal
-                    </button>
-                </div>
+                <h2 className={css.bootcamper}>
+                    {`${this.state.currentGame.bootcamper} vs team: ${
+                        this.state.currentGame.vsTeam
+                    }`}{" "}
+                </h2>
+                <h3 className={css.round}>Round {this.state.playedTimes}</h3>
                 <div className={css.scores}>
                     {Object.keys(this.state.scores)
                         .reverse()
@@ -160,6 +157,14 @@ class App extends Component {
                                 />
                             );
                         })}
+                </div>
+                <div className={css.buttons}>
+                    <button className={css.playButton} onClick={this.play}>
+                        Play
+                    </button>
+                    <button className={css.revealButton} onClick={this.reveal}>
+                        Reveal
+                    </button>
                 </div>
             </div>
         );
