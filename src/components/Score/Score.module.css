@@ -12,6 +12,10 @@
     align-items: center;
 }
 
+.team {
+    font-size: 1.5rem;
+}
+
 .buttons {
     display: flex;
     flex-direction: column;
@@ -19,7 +23,7 @@
 }
 
 .button {
-    background-color: #404040;
+    background-color: black;
     border: none;
     text-align: center;
     height: 35px;
