@@ -29,6 +29,7 @@ body {
 .round {
     position: absolute;
     left: 8vh;
+    cursor: pointer;
 }
 
 .reveal {

@@ -44,6 +44,7 @@ class App extends Component {
 
     clearScores = () => {
         this.setState(() => ({
+            playedTimes: 1,
             scores: {
                 one: 0,
                 two: 0,
@@ -147,6 +148,9 @@ class App extends Component {
         return (
             <div className={css.app}>
                 <h1 className={css.title}>Would I Lie To You?</h1>
+                <h3 className={css.round} onClick={this.clearScores}>
+                    Round {this.state.playedTimes}
+                </h3>
                 <p className={css.fact}>
                     {this.state.currentGame.fact
                         ? `"${this.state.currentGame.fact}"`
@@ -162,7 +166,6 @@ class App extends Component {
                         this.state.currentGame.vsTeam
                     }`}{" "}
                 </h2>
-                <h3 className={css.round}>Round {this.state.playedTimes}</h3>
                 <div className={css.scores}>
                     {Object.keys(this.state.scores)
                         .reverse()
@@ -183,12 +186,6 @@ class App extends Component {
                     </button>
                     <button className={css.revealButton} onClick={this.reveal}>
                         Reveal
-                    </button>
-                    <button
-                        className={css.revealButton}
-                        onClick={this.clearScores}
-                    >
-                        Clear
                     </button>
                 </div>
             </div>
