@@ -11,8 +11,21 @@ class App extends Component {
         super(props);
         this.state = {
             bootcampers: [],
-            trueFacts: [],
-            lieFacts: [],
+            trueFacts: [
+                {
+                    fact:
+                        "Despite being told to avoid the edge of a lake in a public park because it was very deep, I dipped my toe in to see how deep it was and fell in",
+                    reveal: "True",
+                    who: "false"
+                }
+            ],
+            lieFacts: [
+                {
+                    fact: "I don't like computers or IT at all",
+                    reveal: "Lie",
+                    who: "false"
+                }
+            ],
             isRevealed: false,
             playedTimes: 1,
             currentGame: {
@@ -92,19 +105,6 @@ class App extends Component {
                 Math.random() * this.state.trueFacts.length
             );
             this.setState(state => ({
-                bootcampers: [
-                    ...state.bootcampers.slice(
-                        0,
-                        state.bootcampers.indexOf(
-                            state.trueFacts[randomTrue].who
-                        )
-                    ),
-                    ...state.bootcampers.slice(
-                        state.bootcampers.indexOf(
-                            state.trueFacts[randomTrue].who
-                        ) + 1
-                    )
-                ],
                 currentGame: {
                     fact: state.trueFacts[randomTrue].fact,
                     reveal: state.trueFacts[randomTrue].reveal,
@@ -112,31 +112,43 @@ class App extends Component {
                     vsTeam: (state.currentGame.vsTeam % 6) + 1
                 }
             }));
+            let bootcamperIndex = this.state.bootcampers.findIndex(
+                bc => bc === this.state.currentGame.bootcamper
+            );
+            this.setState(state => ({
+                bootcampers: [
+                    ...state.bootcampers.slice(0, bootcamperIndex),
+                    ...state.bootcampers.slice(bootcamperIndex + 1)
+                ]
+            }));
+
+            // Entities - Bootcampers
+            // Picked - [idx, ...]
+            // adding to picked, no duplicates allowed
+            // when picked.length == numBootcampers ? game over -> picked = []
         }
     };
 
     componentDidMount = async () => {
-        const data = await fetch(`${gist_URL}/bootcampers.json`).then(res =>
-            res.json()
-        );
-
-        this.setState(() => ({
-            bootcampers: data
-        }));
-
-        const allFacts = await fetch(`${gist_URL}/facts.json`).then(res =>
-            res.json()
-        );
-
-        this.setState(() => ({
-            trueFacts: allFacts.filter(fact => {
-                return fact.reveal === "True";
-            }),
-            lieFacts: allFacts.filter(fact => {
-                return fact.reveal === "Lie";
-            })
-        }));
-
+        if (gist_ID) {
+            const data = await fetch(`${gist_URL}/bootcampers.json`).then(res =>
+                res.json()
+            );
+            this.setState(() => ({
+                bootcampers: data
+            }));
+            const allFacts = await fetch(`${gist_URL}/facts.json`).then(res =>
+                res.json()
+            );
+            this.setState(() => ({
+                trueFacts: allFacts.filter(fact => {
+                    return fact.reveal === "True";
+                }),
+                lieFacts: allFacts.filter(fact => {
+                    return fact.reveal === "Lie";
+                })
+            }));
+        }
         if (localStorage.getItem("scores")) {
             this.setState(() => ({
                 scores: JSON.parse(localStorage.getItem("scores"))
