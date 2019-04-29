@@ -10,30 +10,16 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            bootcampers: ["Jonny"],
-            trueFacts: [
-                {
-                    fact:
-                        "Despite being told to avoid the edge of a lake in a public park because it was very deep, I dipped my toe in to see how deep it was and fell in",
-                    reveal: "True",
-                    who: "false"
-                }
-            ],
-            lieFacts: [
-                {
-                    fact: "I don't like computers or IT at all",
-                    reveal: "Lie",
-                    who: "false"
-                }
-            ],
-            isRevealed: false,
-            playedTimes: 1,
+            bootcampers: [],
             currentGame: {
                 bootcamper: "Player",
                 fact: "",
                 reveal: "",
                 vsTeam: 0
             },
+            isRevealed: false,
+            lieFacts: [],
+            playedBootcampers: [],
             scores: {
                 one: 0,
                 two: 0,
@@ -41,7 +27,8 @@ class App extends Component {
                 four: 0,
                 five: 0,
                 six: 0
-            }
+            },
+            trueFacts: []
         };
     }
 
@@ -55,9 +42,17 @@ class App extends Component {
         localStorage.setItem("scores", JSON.stringify(this.state.scores));
     };
 
+    clearPlayed = () => {
+        if (
+            this.state.playedBootcampers.length ===
+            this.state.bootcampers.length
+        ) {
+            this.setState(() => ({ playedBootcampers: [] }));
+        }
+    };
+
     clearScores = () => {
         this.setState(() => ({
-            playedTimes: 1,
             scores: {
                 one: 0,
                 two: 0,
@@ -70,63 +65,81 @@ class App extends Component {
         localStorage.removeItem("scores");
     };
 
-    reveal = () => {
-        this.setState(state => ({
-            isRevealed: true,
-            playedTimes: state.playedTimes + 1
-        }));
+    pickLie = () => {
+        let randomLie = Math.floor(Math.random() * this.state.lieFacts.length);
+        let randomBootcamper = Math.floor(
+            Math.random() * this.state.bootcampers.length
+        );
+
+        if (!this.state.playedBootcampers.includes(randomBootcamper)) {
+            this.setState(
+                state => ({
+                    currentGame: {
+                        fact: state.lieFacts[randomLie].fact,
+                        reveal: state.lieFacts[randomLie].reveal,
+                        bootcamper: state.bootcampers[randomBootcamper],
+                        vsTeam: (state.currentGame.vsTeam % 6) + 1
+                    },
+                    playedBootcampers: [
+                        ...state.playedBootcampers,
+                        randomBootcamper
+                    ].sort((a, b) => a - b)
+                }),
+                () => this.clearPlayed()
+            );
+        } else {
+            this.play();
+        }
     };
 
-    play = () => {
+    pickTrue = () => {
+        let randomTrue = Math.floor(
+            Math.random() * this.state.trueFacts.length
+        );
+        if (
+            !this.state.playedBootcampers.includes(
+                this.state.bootcampers.indexOf(
+                    this.state.trueFacts[randomTrue].who
+                )
+            )
+        ) {
+            this.setState(
+                state => ({
+                    currentGame: {
+                        fact: state.trueFacts[randomTrue].fact,
+                        reveal: state.trueFacts[randomTrue].reveal,
+                        bootcamper: state.trueFacts[randomTrue].who,
+                        vsTeam: (state.currentGame.vsTeam % 6) + 1
+                    },
+                    playedBootcampers: [
+                        ...state.playedBootcampers,
+                        state.bootcampers.indexOf(
+                            state.trueFacts[randomTrue].who
+                        )
+                    ].sort((a, b) => a - b)
+                }),
+                () => this.clearPlayed()
+            );
+        } else {
+            this.play();
+        }
+    };
+
+    play = async () => {
         this.setState(() => ({ isRevealed: false }));
         if (Math.random() < 0.5) {
             // Lie
-            let randomLie = Math.floor(
-                Math.random() * this.state.lieFacts.length
-            );
-            let randomBootcamper = Math.floor(
-                Math.random() * this.state.bootcampers.length
-            );
-            this.setState(state => ({
-                bootcampers: [
-                    ...state.bootcampers.slice(0, randomBootcamper),
-                    ...state.bootcampers.slice(randomBootcamper + 1)
-                ],
-                currentGame: {
-                    fact: state.lieFacts[randomLie].fact,
-                    reveal: state.lieFacts[randomLie].reveal,
-                    bootcamper: state.bootcampers[randomBootcamper],
-                    vsTeam: (state.currentGame.vsTeam % 6) + 1
-                }
-            }));
+            this.pickLie();
         } else {
             // True
-            let randomTrue = Math.floor(
-                Math.random() * this.state.trueFacts.length
-            );
-            this.setState(state => ({
-                currentGame: {
-                    fact: state.trueFacts[randomTrue].fact,
-                    reveal: state.trueFacts[randomTrue].reveal,
-                    bootcamper: state.trueFacts[randomTrue].who,
-                    vsTeam: (state.currentGame.vsTeam % 6) + 1
-                }
-            }));
-            let bootcamperIndex = this.state.bootcampers.findIndex(
-                bc => bc === this.state.currentGame.bootcamper
-            );
-            this.setState(state => ({
-                bootcampers: [
-                    ...state.bootcampers.slice(0, bootcamperIndex),
-                    ...state.bootcampers.slice(bootcamperIndex + 1)
-                ]
-            }));
-
-            // Entities - Bootcampers
-            // Picked - [idx, ...]
-            // adding to picked, no duplicates allowed
-            // when picked.length == numBootcampers ? game over -> picked = []
+            this.pickTrue();
         }
+    };
+
+    reveal = () => {
+        this.setState(() => ({
+            isRevealed: true
+        }));
     };
 
     componentDidMount = async () => {
@@ -135,7 +148,7 @@ class App extends Component {
                 res.json()
             );
             this.setState(() => ({
-                bootcampers: data
+                bootcampers: data.sort()
             }));
             const allFacts = await fetch(`${gist_URL}/facts.json`).then(res =>
                 res.json()
@@ -161,7 +174,7 @@ class App extends Component {
             <div className={css.app}>
                 <h1 className={css.title}>Would I Lie To You?</h1>
                 <h3 className={css.round} onClick={this.clearScores}>
-                    Round {this.state.playedTimes}
+                    Round {this.state.playedBootcampers.length}
                 </h3>
                 <p className={css.fact}>
                     {this.state.currentGame.fact
@@ -176,7 +189,7 @@ class App extends Component {
                 <h2 className={css.bootcamper}>
                     {`${this.state.currentGame.bootcamper} vs team: ${
                         this.state.currentGame.vsTeam
-                    }`}{" "}
+                    }`}
                 </h2>
                 <div className={css.scores}>
                     {Object.keys(this.state.scores)
