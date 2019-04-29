@@ -10,7 +10,7 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            bootcampers: [],
+            bootcampers: ["Jonny"],
             currentGame: {
                 bootcamper: "Player",
                 fact: "",
@@ -18,7 +18,14 @@ class App extends Component {
                 vsTeam: 0
             },
             isRevealed: false,
-            lieFacts: [],
+            lieFacts: [
+                {
+                    fact:
+                        "On my first day at school, I had 'something blue' for school diner",
+                    reveal: "Lie",
+                    who: "false"
+                }
+            ],
             playedBootcampers: [],
             scores: {
                 one: 0,
@@ -28,7 +35,14 @@ class App extends Component {
                 five: 0,
                 six: 0
             },
-            trueFacts: []
+            trueFacts: [
+                {
+                    fact:
+                        "I got two small dice stuck up my nose and needed a hospital visit to get them both removed",
+                    reveal: "Lie",
+                    who: "Jonny"
+                }
+            ]
         };
     }
 
